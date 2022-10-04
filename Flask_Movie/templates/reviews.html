@@ -1,0 +1,293 @@
+{% extends "layout.html" %}
+{% block content %}
+	<style type="text/css">
+		.link {
+			text-decoration: none;
+		}
+		.link:hover {;
+			text-decoration: underline;
+		}
+		
+		.grid {
+			display: grid;
+			flex: 1;
+			grid-row-gap: 48px;
+			grid-template-columns: repeat(1, 1fr);
+		}
+		
+		.line-clamp-2 {
+			display: -webkit-box;
+			overflow: hidden;
+			-webkit-line-clamp: 2;
+			-webkit-box-orient: vertical;
+		}
+		
+		.line-clamp-1 {
+			display: -webkit-box;
+			overflow: hidden;
+			-webkit-line-clamp: 1;
+			-webkit-box-orient: vertical;
+		}
+		.darken:hover {
+			filter: brightness(.9);
+		}
+		
+		.scrolling-wrapper {
+			overflow-x: scroll;
+			white-space: nowrap;
+		  scroll-snap-type: x mandatory;
+			-webkit-overflow-scrolling: touch;
+			scroll-padding: 1rem;
+		}
+		
+		.review-margin {
+			margin-left: 80px;
+		}
+		
+		@media only screen and (max-width: 576px) {
+			.review-margin {
+				margin-left: 0;
+			}
+		}
+	</style>
+	<section class="d-flex flex-column p-0" style="background-color: rgb(227, 226, 221);">
+		<div class="bg-white container d-flex flex-column flex-grow-1 px-0 px-sm-4 py-4">
+			{% with messages = get_flashed_messages(with_categories=true) %}
+				{% if messages %}
+					{% for category, message in messages %}
+						<div class="alert alert-{{ category }}">
+							{{ message }}
+						</div>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
+			
+			<div class="row m-0">
+				<div class="d-flex flex-row w-100" style="height: 100px;">
+					<img src="{{ movie[1] }}" class="rounded h-100" loading="lazy">
+					<div class="h-100" style="padding-left: 12px;">
+						<header class="line-clamp-2" style="font-size: 15px;">
+							<a href="{{ url_for('movie', id_movie=id_movie, title=title) }}" class="fw-bold link" style="font-family: Verdana, Arial, sans-serif;">{{ title }}</a>
+							<span class="text-muted" style="font-family: Verdana, Arial, sans-serif;">({{ movie[0] }})</span>
+						</header>
+						<hr class="my-1">
+						<div class="fw-bold" style="font-family: Verdana, Arial, sans-serif; font-size: 21px;">User Reviews</div>
+					</div>
+				</div>
+			</div>
+			
+			<hr>
+			
+			<div class="row flex-grow-1 m-0 py-4">
+				<div class="col-md-4 col-lg-3 col-xl-3 mb-4 mb-md-0">
+					<form action="" method="POST">
+						{{ form.hidden_tag() }}
+						<div class="accordion mb-4" id="sortExample">
+						  <div class="accordion-item">
+						    <h2 class="accordion-header" id="sortHeading">
+						      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#sortBy" aria-expanded="true" aria-controls="sortBy">Sort</button>
+						    </h2>
+						    <div id="sortBy" class="accordion-collapse collapse show" aria-labelledby="sortHeading" data-bs-parent="#sortExample">
+						      <div class="accordion-body">
+						      	<header class="small text-muted mb-3" style="font-family: Verdana, Arial, sans-serif;">Sort Results By</header>
+							      	
+										<div class="sort-grid">
+											{% for i in form.order_by %}
+												<div class="position-relative w-100">
+													{{ i(class="btn-check h-100 w-100") }}
+													{{ i.label(class="btn btn-outline-secondary d-flex align-items-center justify-content-center w-100", style="box-shadow: 0 2px 8px rgba(0, 0, 0, .16); font-family: Verdana, Arial, sans-serif; font-size: 14px; height: 75px;") }}
+												</div>
+											{% endfor %}
+										</div>
+										
+					      		<div class="mt-3">
+					      			{% for i in form.asc_desc %}
+					      				<div class="d-flex align-items-center">
+					      					{{ i }}
+													{{ i.label(class="text-muted ms-2", style="font-family: Verdana, Arial, sans-serif; font-size: 14px;") }}
+					      				</div>
+						      		{% endfor %}
+					      		</div>
+						      </div>
+						    </div>
+						  </div>
+						</div>
+						
+						<div class="accordion mb-4" id="filterExample">
+						  <div class="accordion-item">
+						    <h2 class="accordion-header" id="filterHeading">
+						      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#filterBy" aria-expanded="false" aria-controls="filterBy">Filter by</button>
+						    </h2>
+						    <div id="filterBy" class="accordion-collapse collapse" aria-labelledby="filterHeading" data-bs-parent="#filterExample">
+						      <div class="accordion-body">
+						      	<header class="small text-muted mb-3" style="font-family: Verdana, Arial, sans-serif;">User Rating</header>
+										<div class="filter-grid">
+											{% for i in form.filter_by %}
+												<span class="d-flex align-items-center position-relative w-100">
+													{{ i }}
+													{{ i.label(class="text-muted ms-2", style="font-family: Verdana, Arial, sans-serif; font-size: 14px;") }}
+												</span>
+											{% endfor %}
+										</div>
+						      </div>
+						    </div>
+						  </div>
+						</div>
+						
+						<div class="d-grid gap-2">
+				      {{ form.submit(class="btn btn-warning btn-block border-0 fw-bold", style="font-family: Verdana, Arial, sans-serif; font-size: 14px;") }}
+				    </div>
+						
+					</form>
+				</div>
+
+				<!-- <div class="col-md-4 col-lg-3 col-xl-3 mb-3 mb-lg-0 d-md-flex justify-content-end">
+					<div>
+						{% if current_user.is_authenticated %}
+							{% if found[2] %}
+								<a href="#" class="btn btn-outline-light fw-bold border-0 text-primary" style="font-size: 14px;">
+									<span style="font-family: Verdana, Arial, sans-serif;">See my review</span>
+									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-right-circle" viewBox="0 0 16 16">
+									  <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"/>
+									</svg>
+								</a>
+							{% else %}
+								<a class="d-flex align-items-center border-2 btn btn-secondary rounded-pill" data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="font-size: 14px;">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+									  <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+									</svg>
+									<span class="ms-2" style="font-family: Verdana, Arial, sans-serif;">Review this title</span>
+								</a>
+							{% endif %}
+						{% else %}
+							<div class="small pt-2 pt-md-0" style="font-family: Verdana, Arial, sans-serif; letter-spacing: .2800000011920929px;">Login to write a review.</div>
+						{% endif %}
+					</div>
+		    </div> -->
+		    
+		    <div class="col-md-8 col-lg-9 col-xl-9">
+		    	{% if reviews %}
+						<div class="grid">
+							{% for review in reviews %}
+								<div class="border-0 bg-white rounded p-3" style="box-shadow: 0 2px 8px rgba(0, 0, 0, .16);">
+									{% if review[4] %}
+					          <div class="d-flex align-items-center justify-content-end mb-3">
+						          <svg class="text-warning" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+												<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+											</svg>
+											<div>
+												<small class="ms-1" style="font-family: Verdana, Arial, sans-serif;">{{ '{:,.1f}'.format(review[4]) }}</small>
+												<small class="text-muted" style="font-family: Verdana, Arial, sans-serif;">/10</small>
+											</div>
+										</div>
+									{% endif %}
+									<div class="d-flex align-items-center mb-3">
+										<img src="{{ review[1] }}" class="rounded-circle" height="64" width="64" loading="lazy" style="object-fit: cover;">
+										<div class="d-flex flex-column ms-3" style="letter-spacing: .2500399947166443px;">
+											<div class="small pb-2" style="font-family: Verdana, Arial, sans-serif;">
+												by
+												<a href="#" class="link pb-2" style="font-family: Verdana, Arial, sans-serif;">{{ review[0] }}</a>
+											</div>
+											<div class="d-flex align-items-center small text-muted" style="font-family: Verdana, Arial, sans-serif; letter-spacing: .2500399947166443px;">{{ review[5] | custom_date('high') }}</div>
+						        </div>
+									</div>
+									
+									<div class="review-margin">
+										<header class="fw-bold small pb-2" style="font-family: Verdana, Arial, sans-serif; letter-spacing: .25px;">{{ review[2] }}</header>
+										<small style="font-family: Verdana, Arial, sans-serif;">{{ review[3] }}</small>
+									</div>
+								</div>
+							{% endfor %}
+						</div>
+					{% else %}
+						<div class="small" style="font-family: Verdana, Arial, sans-serif; letter-spacing: .5px;">We don't have any reviews for {{ title }}</div>
+					{% endif %}
+				</div>
+			</div>
+			
+			<!-- Modal -->
+			<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+			  <div class="modal-dialog m-0">
+			    <div class="modal-content border-0 d-flex flex-column rounded-0 min-vh-100 w-100">
+			      <div class="modal-header">
+			      	<div class="d-flex flex-row w-100" style="height: 100px;">
+								<img src="{{ movie[1] }}" class="rounded h-100">
+								<div class="h-100 w-100" style="padding-left: 12px;">
+									<header class="line-clamp-2" style="font-family: Arial, sans-serif; font-size: 18px;">{{ title }}<span class="text-muted ps-1" style="font-size: 14px;">({{ movie[0] }})</span></header>
+									<hr class="my-1">
+									<span class="fs-4" style="font-family: Arial, sans-serif;">by {{ current_user.username }}</span>
+								</div>
+							</div>
+			        <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+			      </div>
+			      
+			      <form action="" method="POST" class="d-flex flex-column flex-grow-1">
+							{{ form.hidden_tag() }}
+				      <div class="modal-body flex-grow-1">
+								<!-- <div class="mb-3">
+									<header class="small pb-2" style="font-family: Arial, sans-serif;">YOUR RATING</header>
+									<div class="border border-1 rounded p-2">
+										{% for i in form.mark %}
+											{{ i }}
+										{% endfor %}
+									</div>
+								</div> -->
+									
+								<div>
+									<header class="small pb-2" style="font-family: Arial, sans-serif;">YOUR REVIEW</header>
+									<div class="mb-3">
+		                {% if form.headline.errors %}
+		                	{{ form.headline(class="form-control form-control-lg is-invalid", style="font-family: Arial, sans-serif; font-size: 14px;") }}
+		                	<div class="invalid-feedback">
+		              			<span>{{ form.headline.errors[0] }}</span>
+		                	</div>
+		                {% else %}
+		                	{{ form.headline(class="form-control form-control-lg small", style="font-family: Arial, sans-serif; font-size: 14px;", placeholder="Write a headline for your review here") }}
+		                {% endif %}
+		              </div>
+		              
+		              <div class="mb-3">
+			              {% if form.message.errors %}
+			              	{{ form.message(class="form-control form-control-lg is-invalid", style="font-family: Arial, sans-serif; font-size: 14px;") }}
+			              	<div class="invalid-feedback">
+			              		{% for error in form.message.errors %}
+			              			<span>{{ error }}</span>
+			              		{% endfor %}
+			              	</div>
+			              {% else %}
+			              	{{ form.message(rows='10', class="form-control form-control-lg", style="font-family: Arial, sans-serif; font-size: 14px;", placeholder="Write your review here") }}
+			              {% endif %}
+			            </div>
+								</div>
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-secondary border-0" data-bs-dismiss="modal" style="font-family: Arial, sans-serif; font-size: 14px;">Close</button>
+				        {{ form.submit(class="btn btn-warning border-0", style="font-family: Arial, sans-serif; font-size: 14px;") }}
+				      </div>
+				    </form>
+			    </div>
+			  </div>
+			</div>
+				
+			<hr>
+			
+			<div class="row m-0">
+				<div class="d-flex align-items-center justify-content-between">
+					<header class="fw-bold text-muted" style="font-family: Verdana, Arial, sans-serif; font-size: 18px;">History</header>
+					<a href="#" class="link small" style="font-family: Verdana, Arial, sans-serif;">CLEAR ALL</a>
+				</div>
+				{% if session['titles'] %}
+					<div class="scrolling-wrapper my-3 pb-3 px-3">
+						{% for movie in session['titles'] %}
+							{% for key, value in movie.items() %}
+								<a href="{{ url_for(value[0], id_movie=value[1], title=key) if value[0] == 'movie' else url_for(value[0], id_person=value[1], title=key) }}" class="darken d-inline-block" style="scroll-snap-align: start; width: 100px;">
+									<img src="{{ value[2] }}" class="rounded w-100" loading="lazy">
+								</a>
+							{% endfor %}
+						{% endfor %}
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</section>
+{% endblock content %}

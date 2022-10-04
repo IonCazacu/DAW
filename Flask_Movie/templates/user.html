@@ -1,0 +1,259 @@
+{% extends "layout.html" %}
+{% block content %}
+	<style type="text/css">
+		.watchlist-grid {
+			display: grid;
+			flex: 1;
+			grid-gap: 6px;
+			grid-template-columns: repeat(4, 1fr);
+		}
+		
+		.rating-grid {
+			display: grid;
+			flex: 1;
+			grid-gap: 6px;
+			grid-template-columns: repeat(6, 1fr);
+		}
+		
+		.line-clamp-1 {
+			display: -webkit-box;
+			overflow: hidden;
+			-webkit-box-orient: vertical;
+			-webkit-line-clamp: 1;
+		}
+		
+		.darken:hover {
+			filter: brightness(.9);
+		}
+		
+		.scrolling-wrapper {
+			overflow-x: scroll;
+			white-space: nowrap;
+		  scroll-snap-type: x mandatory;
+			-webkit-overflow-scrolling: touch;
+			scroll-padding: 1rem;
+		}
+		
+		@media only screen and (max-width: 992px) {
+			.watchlist-grid {
+				grid-template-columns: repeat(3, 1fr);
+			}
+			.rating-grid {
+				grid-template-columns: repeat(4, 1fr);
+			}
+		}
+		@media only screen and (max-width: 576px) {
+			.watchlist-grid {
+				grid-template-columns: repeat(2, 1fr);
+			}
+			.rating-grid {
+				grid-template-columns: repeat(3, 1fr);
+			}
+		}
+	</style>
+	<section class="p-0">
+		<section style="background-color: #000;">
+			<div class="container px-0 px-sm-4 py-4">
+				
+				{% with messages = get_flashed_messages(with_categories=true) %}
+					{% if messages %}
+						{% for category, message in messages %}
+							<div class="alert alert-{{ category }}" style="margin: 0 12px 1rem;">
+								{{ message }}
+							</div>
+						{% endfor %}
+					{% endif %}
+				{% endwith %}
+				
+				<div class="row m-0">
+					<div class="d-flex flex-column flex-sm-row text-center text-sm-start">
+						<div class="mb-3 mb-sm-0">
+							<img src="{{ current_user.image }}" class="rounded-circle" loading="lazy" style="height: clamp(6rem, 15vw, 9rem); object-fit: cover;width: clamp(6rem, 15vw, 9rem);">
+						</div>
+						
+						<div class="ms-0 ms-sm-3">
+							<header class="fw-bold text-white pb-2" style="font-family: Verdana, Arial, sans-serif; font-size: 21px;">{{ current_user.username }}</header>
+							<small class="text-white" style="font-family: Verdana, Arial, sans-serif;">Member since {{ current_user.created | custom_date('high') }}</small>
+						</div>
+						
+						
+						
+					</div>	
+				</div>
+			</div>
+		</section>
+		
+		<div class="container px-0 px-sm-4 py-4">
+			<div class="row mx-0 pb-4">
+				<div class="col-md-8">
+					<div class="pb-4">
+						<div class="border border-1 rounded p-3">
+							<header class="fw-bold pb-2 pb-md-0" style="font-family: Verdana, Arial, sans-serif; font-size: 17.5px;">My Watchlist</header>
+							
+							{% if results[0] %}
+								<div class="watchlist-grid mt-3">
+									{% for movie in results[0] %}
+										<div class="card border-0">
+											<a href="{{ url_for('movie', id_movie=movie[0], title=movie[1]) }}" class="darken">
+												<img src="{{ movie[2] }}" class="rounded-top w-100" loading="lazy">
+											</a>
+											<div class="card-body pb-0 pt-1 px-1 w-100">
+												<a href="{{ url_for('movie', id_movie=movie[0], title=movie[1]) }}" class="link line-clamp-1 small text-center h-100" style="font-family: Verdana, Arial, sans-serif;">{{ movie[1] }}</a>
+											</div>
+										</div>
+									{% endfor %}
+								</div>
+								<hr>
+								<div>
+									<a href="#" class="link small" style="font-family: Verdana, Arial, sans-serif;">See entire Watchlist</a>
+								</div>
+							{% else %}
+								<div class="small text-muted mt-3" style="font-family: Verdana, Arial, sans-serif;">There are no movies on your watchlist.</div>
+							{% endif %}
+						</div>
+					</div>
+					
+					<div class="pb-4">
+						<div class="border border-1 rounded p-3">
+							<div>
+								<header class="fw-bold" style="font-family: Verdana, Arial, sans-serif; font-size: 17.5px;">My Ratings</header>
+								<small class="fw-bold text-muted">Lately Rated</small>
+							</div>
+							
+							{% if results[1] %}
+								<div class="rating-grid mt-3">
+									{% for movie in results[1] %}
+										<div class="card border-0">
+											<a href="{{ url_for('movie', id_movie=movie[0], title=movie[1]) }}" class="darken">
+												<img src="{{ movie[2] }}" class="rounded-top w-100" loading="lazy">
+											</a>
+											<div class="card-body pb-0 pt-1 px-1 w-100">
+												<div class="d-flex align-items-center justify-content-center">
+													<svg class="text-primary" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+													</svg>
+													<small class="ms-1">{{ movie[3] }}</small>
+												</div>
+											</div>
+										</div>
+									{% endfor %}
+								</div>
+								<hr>
+								<div>
+									<a href="#" class="link small" style="font-family: Verdana, Arial, sans-serif;">See all Ratings</a>
+								</div>
+							{% else %}
+								<div class="small text-muted mt-3" style="font-family: Verdana, Arial, sans-serif;">You haven't rated any movies.</div>
+							{% endif %}
+						</div>
+					</div>
+					
+					<div class="pb-4">
+						<div class="border border-1 rounded p-3">
+							<header class="fw-bold" style="font-family: Verdana, Arial, sans-serif; font-size: 17.5px;">My Reviews</header>
+							
+							
+						</div>
+					</div>
+				</div>
+				
+				<div class="col-md-4">
+					<header class="fw-bold" style="font-family: Verdana, Arial, sans-serif; font-size: 17.5px;">Statistics</header>
+					
+					<div class="" style="width: ;">
+						<header class="mb-3">Rating Overview</header>
+						<canvas id="vertical-bar-chart" style=""></canvas>
+					</div>
+					
+					<div class="" style="width: ;">
+						<header class="mb-3">Most Watched Genres</header>
+						<canvas id="doughnut-chart" style=""></canvas>
+					</div>
+				</div>
+			</div>
+			
+			<div class="row mx-0">
+				<div class="d-flex align-items-center justify-content-between">
+					<header class="fw-bold" style="font-family: Verdana, Arial, sans-serif; font-size: 18px;">History</header>
+					<a href="#" class="link small" style="font-family: Verdana, Arial, sans-serif;">CLEAR ALL</a>
+				</div>
+				{% if session['titles'] %}
+					<div class="scrolling-wrapper my-3 p-3">
+						{% for movie in session['titles'] %}
+							{% for key, value in movie.items() %}
+								<a href="{{ url_for(value[0], id_movie=value[1], title=key) if value[0] == 'movie' else url_for(value[0], id_person=value[1], title=key) }}" class="darken d-inline-block" style="scroll-snap-align: start; width: 100px;">
+									<img src="{{ value[2] }}" class="rounded w-100" loading="lazy">
+								</a>
+							{% endfor %}
+						{% endfor %}
+					</div>
+				{% else %}
+					<div class="my-3" style="font-family: Verdana, Arial, sans-serif;">You have no recently viewed pages</div>
+				{% endif %}
+			</div>
+			
+		</div>
+	</section>
+	<script>
+		const data = {{ data | tojson }}
+		console.log(data);
+		
+		const vbc = document.getElementById('vertical-bar-chart').getContext('2d');
+		const vertical_bar_chart = new Chart(vbc, {
+			type: 'bar',
+			data: {
+				labels: ['1', '2', '3', '4', '5'],
+				datasets: [{
+					data: data,
+					backgroundColor: [
+					'#7cdddd'
+					]
+				}]
+			},
+			options: {
+				responsive: true,
+				aspectRatio: 3,
+				plugins: {
+					legend: {
+						display: false
+					}
+				},
+				scales: {
+					x: {
+						grid: {
+							display: false,
+						}
+					},
+					y: {
+						ticks: {
+							display: false
+						}
+					}
+				}
+			}
+		});
+		
+		const dc = document.getElementById('doughnut-chart').getContext('2d');
+		const doughnut_chart = new Chart(dc, {
+			type: 'doughnut',
+			data: {
+				labels: ['Drama', 'Action', 'Crime', 'Comedy', 'Other'],
+				datasets: [{
+					data: data,
+					backgroundColor: [
+					'#52d726', '#ffec00', '#ff0000', '#007ed6', '#ff7300'
+					]
+				}]
+			},
+			options: {
+				responsive: true,
+				aspectRatio: 3,
+				plugins: {
+					legend: {
+						position: 'right'
+					}
+        },
+			}
+		})
+		</script>
+{% endblock content %}

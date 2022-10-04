@@ -1,0 +1,143 @@
+{% extends "layout.html" %}
+{% block content %}
+	<style type="text/css">
+		.accordion-item:last-of-type {
+			border: none;
+		}
+		.accordion-button,
+		.accordion-button:not(.collapsed) {
+			background-color: rgb(242, 242, 241);
+			box-shadow: 0 2px 8px rgba(0, 0, 0, .16);
+			color: #000;
+			display: flex;
+			font-size: 15px;
+			font-weight: 700;
+			font-family: Verdana, Arial, sans-serif;
+			justify-content: space-between;
+		}
+		.accordion-button:not(.collapsed)::after {
+			background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+			margin: 0;
+		}
+		.accordion-collapse {
+			background-color: rgb(242, 242, 241);
+			box-shadow: 0 2px 8px rgba(0, 0, 0, .16);
+		}
+		.link {
+			text-decoration: none;
+		}
+		.link:hover {
+			text-decoration: underline;
+		}
+		.sap__grid {
+			display: grid;
+			flex: 1;
+			grid-gap: 12px;
+			grid-template-columns: repeat(4, 1fr);
+		}
+		.darken:hover {
+			filter: brightness(.9);
+		}
+		.line-clamp-3 {
+			display: -webkit-box;
+			overflow: hidden;
+			-webkit-box-orient: vertical;
+			-webkit-line-clamp: 3;
+		}
+		
+		.scrolling-wrapper {
+			overflow-x: scroll;
+			white-space: nowrap;
+		  scroll-snap-type: x mandatory;
+			-webkit-overflow-scrolling: touch;
+			scroll-padding: 1rem;
+		}
+		
+		@media only screen and (max-width: 1200px) {
+			.sap__grid {
+				grid-template-columns: repeat(3, 1fr);
+			}
+		}
+		@media only screen and (max-width: 992px) {
+			.sap__grid {
+				grid-template-columns: repeat(2, 1fr);
+			}
+		}
+	</style>
+	<section class="d-flex flex-column p-0" style="background-color: rgb(227, 226, 221);">
+		<div class="bg-white container flex-grow-1 px-0 px-sm-4 py-4">
+			{% with messages = get_flashed_messages(with_categories=true) %}
+				{% if messages %}
+					{% for category, message in messages %}
+						<div class="alert alert-{{ category }}">
+							{{ message }}
+						</div>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
+			
+			<div class="row m-0">
+				<header class="fw-bold pb-3" style="font-family: Verdana, Arial, sans-serif; font-size: 21px;">Birth Month Day of {{ now.strftime('%B %d') }}</header>
+				
+				<div class="col-md-3">	
+					<div class="accordion pb-4" id="accordionExample">
+					  <div class="accordion-item">
+					    <h2 class="accordion-header" id="headingOne">
+					      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Sort by</button>
+					    </h2>
+					    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+					      <div class="accordion-body">
+					      	
+					      </div>
+					    </div>
+					  </div>
+					</div>
+		    </div>
+		    
+		    <div class="col-md-9">
+		    	<div class="sap__grid">
+			    	{% for person in result %}
+			    		<div class="bg-white border-0 card p-0" style="box-shadow: 0 2px 8px rgba(0, 0, 0, .16);">
+								<a href="{{ url_for('person', id_person=person[0], title=person[1]) }}" class="darken">
+									<img src="{{ person[3] }}" class="rounded-top w-100" loading="lazy">
+								</a>
+								<div class="card-body p-3 w-100">
+									<div class="small pb-2">Known for {{ person[2] }}</div>
+									<div style="height: 69px;">
+										<a href="{{ url_for('person', id_person=person[0], title=person[1]) }}" class="fw-bold link line-clamp-3" style="font-family: Verdana, Arial, sans-serif; font-size: 15px;">{{ person[1] }}</a>
+									</div>
+								</div>
+							</div>
+			    	{% endfor %}
+			    </div>
+		    </div>
+		    
+		    <!-- <div class="col-md-3" style="border-left: 3px solid rgb(153, 153, 153);">
+		    	
+		    </div> -->
+	    </div>
+	    
+	    <hr>
+	    
+	    <div class="row m-0">
+				<div class="d-flex align-items-center justify-content-between">
+					<header style="font-family: Verdana, Arial, sans-serif; font-size: 18px;">History</header>
+					<a href="#" class="link small" style="font-family: Verdana, Arial, sans-serif;">CLEAR ALL</a>
+				</div>
+				{% if session['titles'] %}
+					<div class="scrolling-wrapper my-3 pb-3 px-3">
+						{% for movie in session['titles'] %}
+							{% for key, value in movie.items() %}
+								<a href="{{ url_for(value[0], id_movie=value[1], title=key) if value[0] == 'movie' else url_for(value[0], id_person=value[1], title=key) }}" class="darken d-inline-block" style="scroll-snap-align: start; width: 100px;">
+									<img src="{{ value[2] }}" class="rounded w-100" loading="lazy">
+								</a>
+							{% endfor %}
+						{% endfor %}
+					</div>
+				{% else %}
+					<div class="my-3 pt-3" style="letter-spacing: .5px;">You have no recently viewed pages</div>
+				{% endif %}
+			</div>
+		</div>
+	</section>
+{% endblock content %}

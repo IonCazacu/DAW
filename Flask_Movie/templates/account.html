@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+{% block content %}
+	<style type="text/css">
+		.form-control:focus {
+			border-color: #ffc107;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, .16);
+		}
+	</style>
+	<section class="d-flex flex-column p-0" style="background-color: rgb(227, 226, 221);">
+		<div class="bg-white container flex-grow-1 px-0 px-sm-4 py-4">
+			{% with messages = get_flashed_messages(with_categories=true) %}
+				{% if messages %}
+					{% for category, message in messages %}
+						<div class="alert alert-{{ category }}">
+							{{ message }}
+						</div>
+					{% endfor %}
+				{% endif %}
+			{% endwith %}
+			
+			<div class="row d-flex align-items-center justify-content-center m-0">
+		  	<div class="col-12 col-sm-11 col-md-9 col-lg-7 col-xl-5">
+					<div class="card p-4">
+						<div class="text-center">
+							<img src="{{ current_user.image }}" class="rounded-circle mb-3" height="150" width="150" loading="lazy" style="object-fit: cover;">
+						</div>
+		      	<header class="fs-3 pb-2" style="font-family: Arial, sans-serif;">Edit Profile</header>
+			      <form action="" method="POST" enctype="multipart/form-data">
+			      	{{ form.hidden_tag() }}
+			        
+		          <div class="mb-3">
+		            {{ form.username.label(class="form-control-label fw-bold small", style="font-family: Arial, sans-serif;") }}
+		            
+		            {% if form.username.errors %}
+		            	{{ form.username(class="form-control form-control-lg is-invalid", style="font-family: Arial, sans-serif; font-size: 14px;") }}
+		            	<div class="invalid-feedback">
+		            		{% for error in form.username.errors %}
+		            			<span>{{ error }}</span>
+		            		{% endfor %}
+		            	</div>
+		            {% else %}
+		            	{{ form.username(class="form-control form-control-lg", style="font-family: Arial, sans-serif; font-size: 14px;") }}
+		            {% endif %}
+		          </div>
+			        
+		          <div class="mb-3">
+		            {{ form.email.label(class="form-control-label fw-bold small", style="font-family: Arial, sans-serif;") }}
+		            
+		            {% if form.email.errors %}
+		            	{{ form.email(class="form-control form-control-lg is-invalid", style="font-family: Arial, sans-serif; font-size: 14px;") }}
+		            	<div class="invalid-feedback">
+		            		{% for error in form.email.errors %}
+		            			<span>{{ error }}</span>
+		            		{% endfor %}
+		            	</div>
+		            {% else %}
+		            	{{ form.email(class="form-control form-control-lg", style="font-family: Arial, sans-serif; font-size: 14px;") }}
+		            {% endif %}
+		          </div>
+			        
+		          <div class="mb-3">
+		            {{ form.image.label(class="form-control-label fw-bold small", style="font-family: Arial, sans-serif;") }}
+		            {{ form.image(class="form-control form-control-sm") }}
+		            {% if form.image.errors %}
+		            	{% for error in form.image.errors %}
+	            			<span class="text-danger">{{ error }}</span><br>
+	            		{% endfor %}
+		            {% endif %}
+		          </div>
+			        
+			        <div class="d-grid gap-2">
+		            {{ form.submit(class="btn btn-warning btn-block border-0", style="font-family: Arial, sans-serif; font-size: 14px;") }}
+		          </div>
+			      </form>
+			    </div>
+			  </div>
+			</div>
+		</div>
+	</section>
+{% endblock content %}

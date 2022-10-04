@@ -1,0 +1,132 @@
+{% extends "layout.html" %}
+{% block content %}
+	<style type="text/css">
+		.fgpmasbgb__wrapper {
+			display: grid;
+			flex: 1;
+			grid-gap: 12px;
+			grid-template-columns: repeat(3, 1fr);
+		}
+		.fgpmbgb__wrapper,
+		.fgpsbgb__wrapper {
+			display: grid;
+			flex: 1;
+			grid-template-columns: repeat(4, 1fr);
+		}
+		
+		.link {
+			text-decoration: none;
+		}
+		.link:hover {
+			text-decoration: underline;
+		}
+		
+		.scrolling-wrapper {
+			overflow-x: scroll;
+			white-space: nowrap;
+		  scroll-snap-type: x mandatory;
+			-webkit-overflow-scrolling: touch;
+			scroll-padding: 1rem;
+		}
+		
+		.darken:hover {
+			filter: brightness(.9);
+		}
+		
+		@media only screen and (max-width: 992px) {
+			.fgpmasbgb__wrapper {
+				grid-template-columns: repeat(2, 1fr);
+			}
+			.fgpmbgb__wrapper,
+			.fgpsbgb__wrapper {
+				grid-template-columns: repeat(3, 1fr);
+			}
+		}
+		@media only screen and (max-width: 576px) {
+			.fgpmbgb__wrapper,
+			.fgpsbgb__wrapper {
+				grid-template-columns: repeat(2, 1fr);
+			}
+		}
+	</style>
+	<section class="d-flex flex-column p-0" style="background-color: rgb(227, 226, 221);">
+		<div class="bg-white container flex-grow-1 px-0 px-sm-4 py-4">
+			<div class="row m-0">
+				<div class="col-md-8">
+					
+					<div>
+						<header class="fs-4 mb-3" style="font-family: Arial, sans-serif;">Movies & Shows by genre</header>
+						
+						<div class="fgpmasbgb__wrapper">
+							{% for genre in genres %}
+								{% if genre[2] not in ['1', '2'] %}
+									<div class="position-relative">
+										<a href="#">
+											<img src="{{ genre[2] }}" class="rounded w-100" loading="lazy" style="filter: brightness(.5);">
+										</a>
+										<span class="fw-bold text-uppercase text-white position-absolute" style="font-family: Arial, sans-serif; font-size: 18px; top: 50%; left: 50%; transform: translate(-50%, -50%);">{{ genre[1] }}</span>
+									</div>
+								{% endif %}
+							{% endfor %}
+						</div>
+					</div>
+					
+					<div>
+						<hr>
+						<header class="fs-4 mb-3" style="font-family: Arial, sans-serif;">Movies by genre</header>
+						
+						<div class="fgpmbgb__wrapper">
+							{% for genre in genres %}
+								{% if genre[2] != '2' %}
+									<a href="{{ url_for('search_genre', id_genre=genre[0], genre=genre[1]) }}" class="link" style="font-family: Verdana, Arial, sans-serif;">
+										<small>{{ genre[1] }}</small>
+									</a>
+								{% endif %}
+							{% endfor %}
+						</div>
+					</div>
+					
+					<div>
+						<hr>
+						<header class="fs-4 mb-3" style="font-family: Arial, sans-serif;">Shows by genre</header>
+						
+						<div class="fgpsbgb__wrapper">
+							{% for genre in genres %}
+								{% if genre[2] != '1' %}
+									<a href="#" class="link" style="font-family: Verdana, Arial, sans-serif;">
+										<small>{{ genre[1] }}</small>
+									</a>
+								{% endif %}
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+				
+				<div class="col-md-4" style="border-left: 3px solid rgb(153, 153, 153);">
+					
+				</div>
+				
+				<div>
+					<hr>
+					<div class="d-flex align-items-center justify-content-between">
+						<header style="font-family: Arial, sans-serif; font-size: 18px;">History</header>
+						<a href="#" class="link small" style="font-family: Verdana, Arial, sans-serif;">CLEAR ALL</a>
+					</div>
+					{% if session['titles'] %}
+						<div class="scrolling-wrapper my-3 pb-3 px-3">
+							{% for movie in session['titles'] %}
+								{% for key, value in movie.items() %}
+									<a href="{{ url_for(value[0], id_movie=value[1], title=key) if value[0] == 'movie' else url_for(value[0], id_person=value[1], title=key) }}" class="darken d-inline-block" style="scroll-snap-align: start; width: 100px;">
+										<img src="{{ value[2] }}" class="rounded w-100" loading="lazy">
+									</a>
+								{% endfor %}
+							{% endfor %}
+						</div>
+					{% else %}
+						<div class="my-3" style="font-family: Arial, sans-serif;">You have no recently viewed pages</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</section>
+{% endblock content %}

@@ -1,0 +1,151 @@
+{% extends "layout.html" %}
+{% block content %}
+		<style type="text/css">
+		.scrolling-wrapper {
+			overflow-x: scroll;
+			white-space: nowrap;
+		  scroll-snap-type: x mandatory;
+			-webkit-overflow-scrolling: touch;
+			scroll-padding: 1rem;
+		}
+		
+		.darken:hover {
+			filter: brightness(.9);
+		}
+		.link {
+			text-decoration: none;
+		}
+		.link:hover {;
+			text-decoration: underline;
+		}
+		
+		@media only screen and (max-width: 576px) {
+			.np {
+				padding: 0;
+			}
+			.appwpi {
+				padding-left: 12px;
+				padding-right: 12px;
+			}
+		}
+	</style>
+	
+	<section class="p-0">
+		<section style="background-color: #000;">
+			<div class="container px-0 px-sm-4 py-4">
+				<div class="row mx-0">
+					<div class="mb-3">
+						<header class="text-white pb-2" style="font-size: clamp(2rem, 6vw, 3rem);">{{ title }}</header>
+						<small class="text-muted" style="letter-spacing: .2500399947166443px">Known for {{ results[0][0][1] }}</small>
+					</div>
+					
+					<div class="col-md-4 col-lg-3 np mb-3 mb-md-0">
+						<div class="darken mb-3">
+							<a href="#">
+								<img src="{{ results[0][0][7] }}" class="rounded w-100" loading="lazy">
+							</a>
+						</div>
+						
+						<div class="appwpi">
+							<header class="fst-italic fw-lighter text-white fs-4">Private Data</header>
+						
+							<div class="mt-3">
+								<div>
+									<header class="fw-bold text-white pb-2" style="letter-spacing: .1499200016260147px;">Gender</header>
+									<span class="text-white" style="letter-spacing: .5px;">{{ '---' if results[0][0][0] == 'None' else results[0][0][0] }}</span>
+								</div>
+								
+								
+								<div>
+									<hr class="bg-white">
+									<header class="fw-bold text-white pb-2" style="letter-spacing: .1499200016260147px;">Birthday</header>
+									<span class="text-white" style="letter-spacing: .5px;">{{ '%s (%s years old)' | format(results[0][0][3], results[0][0][5]) if results[0][0][3] else '---' }}</span>
+								</div>
+								
+								{% if results[0][0][4] %}
+									<div>
+										<hr class="bg-white">
+										<header class="fw-bold text-white pb-2" style="letter-spacing: .1499200016260147px;">Deathday</header>
+										<span class="text-white" style="letter-spacing: .5px;">{{ results[0][0][4] }}</span>
+									</div>
+								{% endif %}
+								
+								<div>
+									<hr class="bg-white">
+									<header class="fw-bold text-white pb-2" style="letter-spacing: .1499200016260147px;">Place of birth</header>
+									<span class="text-white" style="letter-spacing: .5px;">{{ results[0][0][6] if results[0][0][6] else '---' }}</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="col-md-8 col-lg-9">
+						<header class="fst-italic fw-lighter text-white fs-4 pb-2">Biography</header>
+						<span class="text-white" style="letter-spacing: .5px;">{{ results[0][0][2] if results[0][0][2] else 'We do not have a biography for %s' | format(title) }}</span>
+					</div>
+				</div>
+			</div>
+		</section>
+		
+		<div class="bg-white">
+			<div class="container px-0 px-sm-4 py-4">
+				<div class="row mx-0">
+					<div class="pb-4">
+						<div class="d-flex align-items-center">
+							<svg class="text-dark" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-square-fill" viewBox="0 0 16 16">
+							  <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2z"/>
+							</svg>
+							<header class="fst-italic fw-lighter text-dark fs-4 ps-3">Known for</header>
+						</div>
+						
+						<div class="scrolling-wrapper my-3 pb-3 px-3">
+							{% for movie in results[1] %}
+								<div class="border-0 bg-white card d-inline-block p-0" style="box-shadow: 0 2px 8px rgba(0, 0, 0, .16); width: 200px;">
+									<a href="{{ url_for('movie', id_movie=movie[0], title=movie[1]) }}" class="darken">
+										<img src="{{ movie[3] }}" class="rounded-top w-100" loading="lazy">
+									</a>
+									<div class="card-body p-3 w-100">
+										<div class="text-center text-truncate" style="height: 45px;">
+											<a href="{{ url_for('movie', id_movie=movie[0], title=movie[1]) }}" class="link text-dark" style="letter-spacing: .5px;">{{ movie[1] }}</a>
+											<div class="text-muted small">({{ movie[2] }})</div>
+										</div>
+									</div>
+								</div>
+							{% endfor %}
+						</div>
+					</div>
+					
+					<div class="pb-4">
+						<div class="d-flex align-items-center">
+							<svg class="text-dark" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-square-fill" viewBox="0 0 16 16">
+							  <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2z"/>
+							</svg>
+							<header class="fst-italic fw-lighter text-dark fs-4 ps-3">Filmography</header>
+						</div>
+						
+						<div class="my-3" style="letter-spacing: .5px;">Nothing</div>
+					</div>
+					
+					<div>
+						<div class="d-flex align-items-center justify-content-between">
+							<header class="fst-italic fw-bold text-dark fs-4">History</header>
+							<a href="{{ url_for('clear_session') }}" class="link small" style="letter-spacing: .2800000011920929px;">CLEAR ALL</a>
+						</div>
+						
+						{% if session['titles'] %}
+							<div class="scrolling-wrapper my-3 pb-3 px-3">
+								{% for movie in session['titles'] %}
+									{% for key, value in movie.items() %}
+										<a href="{{ url_for(value[0], id_movie=value[1], title=key) if value[0] == 'movie' else url_for(value[0], id_person=value[1], title=key) }}" class="darken d-inline-block" style="scroll-snap-align: start; width: 100px;">
+											<img src="{{ value[2] }}" class="rounded w-100" loading="lazy">
+										</a>
+									{% endfor %}
+								{% endfor %}
+							</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+{% endblock content %}

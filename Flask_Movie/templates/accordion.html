@@ -1,0 +1,111 @@
+<style type="text/css">
+	.accordion-item:last-of-type {
+			border: none;
+		}
+		.accordion-button,
+		.accordion-button:not(.collapsed) {
+			background-color: rgb(255, 255, 255);
+			box-shadow: 0 0 8px rgba(0, 0, 0, .16);
+			color: #000;
+			display: flex;
+			font-size: 15px;
+			font-weight: 700;
+			font-family: Verdana, Arial, sans-serif;
+			justify-content: space-between;
+		}
+		.accordion-button:not(.collapsed)::after {
+			background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+			margin: 0;
+		}
+		.accordion-collapse {
+			background-color: rgb(255, 255, 255);
+			box-shadow: 0 0 8px rgba(0, 0, 0, .16);
+			/*border-top: 1px solid rgb(238, 238, 238);*/
+		}
+		.sort-grid {
+			display: grid;
+			flex: 1;
+			grid-gap: 12px;
+			grid-template-columns: repeat(2, 1fr);
+		}
+		
+		.filter-grid {
+			display: grid;
+			flex: 1;
+			grid-gap: 12px;
+			grid-template-columns: repeat(3, 1fr);
+		}
+		@media only screen and (max-width: 1400px) {
+			.filter-grid {
+				grid-template-columns: repeat(2, 1fr);
+			}
+		}
+		
+		@media only screen and (max-width: 768px) {
+			.filter-grid {
+				grid-template-columns: repeat(3, 1fr);
+			}
+		}
+</style>
+
+<div class="col-md-5 col-lg-4 col-xl-3 mb-4 mb-md-0">
+	<form action="" method="POST">
+		{{ form.hidden_tag() }}
+		<div class="accordion mb-4" id="sortExample">
+		  <div class="accordion-item">
+		    <h2 class="accordion-header" id="sortHeading">
+		      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#sortBy" aria-expanded="true" aria-controls="sortBy">Sort</button>
+		    </h2>
+		    <div id="sortBy" class="accordion-collapse collapse show" aria-labelledby="sortHeading" data-bs-parent="#sortExample">
+		      <div class="accordion-body">
+		      	<header class="small text-muted mb-3" style="font-family: Verdana, Arial, sans-serif;">Sort Results By</header>
+			      	
+						<div class="sort-grid">
+							{% for i in form.order_by %}
+								<div class="position-relative w-100">
+									{{ i(class="btn-check h-100 w-100") }}
+									{{ i.label(class="btn btn-outline-secondary d-flex align-items-center justify-content-center w-100", style="box-shadow: 0 2px 8px rgba(0, 0, 0, .16); font-family: Verdana, Arial, sans-serif; font-size: 14px; height: 75px;") }}
+								</div>
+							{% endfor %}
+						</div>
+						
+	      		<div class="mt-3">
+	      			{% for i in form.asc_desc %}
+	      				<div class="d-flex align-items-center">
+	      					{{ i }}
+									{{ i.label(class="text-muted ms-2", style="font-family: Verdana, Arial, sans-serif; font-size: 14px;") }}
+	      				</div>
+		      		{% endfor %}
+	      		</div>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<div class="accordion mb-4" id="filterExample">
+		  <div class="accordion-item">
+		    <h2 class="accordion-header" id="filterHeading">
+		      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#filterBy" aria-expanded="false" aria-controls="filterBy">Filter by</button>
+		    </h2>
+		    <div id="filterBy" class="accordion-collapse collapse" aria-labelledby="filterHeading" data-bs-parent="#filterExample">
+		      <div class="accordion-body">
+		      	<header class="small text-muted mb-3" style="font-family: Verdana, Arial, sans-serif;">User Rating</header>
+						<div class="filter-grid">
+							{% for i in form.filter_by %}
+								<span class="d-flex align-items-center position-relative w-100">
+									{{ i }}
+									{{ i.label(class="text-muted ms-2", style="font-family: Verdana, Arial, sans-serif; font-size: 14px;") }}
+								</span>
+							{% endfor %}
+						</div>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<div class="d-grid gap-2">
+      {{ form.submit(class="btn btn-warning btn-block border-0 fw-bold", style="font-family: Verdana, Arial, sans-serif; font-size: 14px;") }}
+    </div>
+		
+	</form>
+</div>
